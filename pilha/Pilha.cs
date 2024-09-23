@@ -1,92 +1,156 @@
-public class Pilha{
-    public No topo;
+public class Pilha {
+    public No topo;  /
 
-    public Pilha(){
+    public Pilha() {
         this.topo = null;
     }
 
-    public Boolean estaVazia(){
-        if(this.topo ==null){
-            return true;
-        }
-        return false;
+    public Boolean estaVazia() {
+        return this.topo == null;
     }
 
-    public void push(int valor){ // inserindo um elemento na pilha
-        No novoNo = new No(valor);
+    public void push(string nome, string extensao, int tamanho) {
+        No novoNo = new No(nome, extensao, tamanho);
 
-        if(this.estaVazia() == true){
+        // Se a pilha estiver vazia, o novo nó será o topo
+        if (this.estaVazia()) {
             this.topo = novoNo;
-        }
-        else{
+        } else {
+            // Caso contrário, o novo nó aponta para o antigo topo
             novoNo.prox = this.topo;
-            this.topo = novoNo;
+            this.topo = novoNo; // E o novo nó se torna o topo
         }
     }
 
-    public No pop(){ // retirando um elemento da pilha
-
-        No aux = null;
-
-        if(this.estaVazia() == true){
-            return(null);
-        }
-        else{
-            aux = this.topo;
-            this.topo = this.topo.prox;
-            aux.prox = null;
-            return(aux);
+    // Remove o topo da pilha (operação POP)
+    public No pop() {
+        if (this.estaVazia()) {
+            return null;  // Retorna nulo se a pilha estiver vazia
+        } else {
+            No aux = this.topo;  // Armazena o nó removido
+            this.topo = this.topo.prox;  // O próximo nó se torna o topo
+            aux.prox = null;  // Remove a referência ao próximo nó
+            return aux;  // Retorna o nó removido
         }
     }
 
-    public Boolean consulta(int valor, ref No noAtual, ref No noAnterior){ //BUSCA ELEMENTO NA LISTA 
-        
-        noAtual = this.topo; //Copia da lista
-        while(noAtual != null){ //Percorrer lista
-            if(noAtual.valor == valor){
-                return(true);
+    // Consulta um documento na pilha
+    public Boolean consulta(string nome, string extensao, ref No noAtual, ref No noAnterior) {
+        noAtual = this.topo;
+        noAnterior = null;
+
+        while (noAtual != null) {
+            // Verifica se o nome e a extensão coincidem
+            if (noAtual.nomeDoArquivo == nome && noAtual.extensaoDoArquivo == extensao) {
+                return true;  // Documento encontrado
             }
+            noAnterior = noAtual;
             noAtual = noAtual.prox;
         }
-        return(false);
+        return false;  // Documento não encontrado
     }
 
-    public void imprimir(){
-
+    // Imprime todos os documentos da pilha
+    public void imprimir() {
         No noAtual = this.topo;
 
-            while(noAtual != null){
-                Console.Write(noAtual.valor + "-> ");
+        if (noAtual == null) {
+            Console.WriteLine("Pilha vazia.");
+        } else {
+            while (noAtual != null) {
+                noAtual.imprimir();
                 noAtual = noAtual.prox;
             }
-            Console.WriteLine("\n");
-    
         }
-    public int retornarQuantidadePilha() { 
+        Console.WriteLine();
+    }
 
+    // Retorna a quantidade de documentos na pilha
+    public int retornarQuantidadePilha() {
         No noAtual = this.topo;
-
         int qtd = 0;
-        while(noAtual != null){
+
+        while (noAtual != null) {
             qtd++;
             noAtual = noAtual.prox;
         }
         return qtd;
     }
 
-     public int contarImpares() {
-        No noAtual = topo;
+    // Conta quantos documentos possuem tamanho ímpar
+    public int contarImpares() {
+        No noAtual = this.topo;
         int qtdImpares = 0;
 
         while (noAtual != null) {
-            if (noAtual.valor % 2 != 0) {  // Verifica se o valor é ímpar
+            if (noAtual.tamanhoDoArquivo % 2 != 0) {
                 qtdImpares++;
             }
             noAtual = noAtual.prox;
         }
-
         return qtdImpares;
     }
 
+    // Separa números positivos em uma pilha2 e negativos em pilha3
+    public void separarPositivosNegativos(Pilha pilha2, Pilha pilha3) {
+        No noAtual = this.topo;
 
+        while (noAtual != null) {
+            if (noAtual.tamanhoDoArquivo > 0) {
+                pilha2.push(noAtual.nomeDoArquivo, noAtual.extensaoDoArquivo, noAtual.tamanhoDoArquivo);
+            } else {
+                pilha3.push(noAtual.nomeDoArquivo, noAtual.extensaoDoArquivo, noAtual.tamanhoDoArquivo);
+            }
+            noAtual = noAtual.prox;
+        }
+    }
+
+    // Inverte a ordem dos elementos da pilha
+    public void inverterPilha() {
+        Pilha pilhaAuxiliar = new Pilha();
+
+        while (!this.estaVazia()) {
+            No noRemovido = this.pop();
+            pilhaAuxiliar.push(noRemovido.nomeDoArquivo, noRemovido.extensaoDoArquivo, noRemovido.tamanhoDoArquivo);
+        }
+
+        this.topo = pilhaAuxiliar.topo;
+    }
+
+    // Verifica se a pilha forma um palíndromo
+    public Boolean verificarPalindromo() {
+        Pilha pilhaAuxiliar = new Pilha();
+        No noAtual = this.topo;
+
+        // Copia a pilha para a auxiliar
+        while (noAtual != null) {
+            pilhaAuxiliar.push(noAtual.nomeDoArquivo, noAtual.extensaoDoArquivo, noAtual.tamanhoDoArquivo);
+            noAtual = noAtual.prox;
+        }
+
+        noAtual = this.topo;
+
+        // Verifica se a ordem inversa é igual à original
+        while (noAtual != null) {
+            No noAux = pilhaAuxiliar.pop();
+            if (noAtual.nomeDoArquivo != noAux.nomeDoArquivo) {
+                return false;
+            }
+            noAtual = noAtual.prox;
+        }
+        return true;
+    }
+
+    // Transfere elementos de uma pilha para outra, mantendo a ordem
+    public void transferirElementos(Pilha pilhaDestino) {
+        Pilha pilhaAuxiliar = new Pilha();
+
+        while (!this.estaVazia()) {
+            pilhaAuxiliar.push(this.pop().nomeDoArquivo, this.pop().extensaoDoArquivo, this.pop().tamanhoDoArquivo);
+        }
+
+        while (!pilhaAuxiliar.estaVazia()) {
+            pilhaDestino.push(pilhaAuxiliar.pop().nomeDoArquivo, pilhaAuxiliar.pop().extensaoDoArquivo, pilhaAuxiliar.pop().tamanhoDoArquivo);
+        }
+    }
 }
